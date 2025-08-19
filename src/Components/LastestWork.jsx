@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import { Github, ExternalLink } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
 export const projects = [
   {
@@ -46,73 +49,131 @@ export const projects = [
   },
 ];
 
-const LastestWork = () => {
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.10,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+const headingVariants = {
+  hidden: { opacity: 0, y: 28 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 28, scale: 0.995 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 140, damping: 18 },
+  },
+};
+
+export default function LatestWork() {
+  const reduce = useReducedMotion();
+
   return (
     <>
       {/* Header */}
-      <div
+      <motion.div
         id="work"
         className="text-center flex flex-col gap-2 py-16 scroll-mt-10"
+        initial={reduce ? undefined : "hidden"}
+        whileInView={reduce ? undefined : "visible"}
+        viewport={{ once: true, amount: 0.2 }}
+        variants={headingVariants}
+        style={{ willChange: "transform, opacity" }}
       >
         <h1 className="text-gray-500 text-lg tracking-widest">My portfolio</h1>
-        <h1 className="text-4xl font-semibold tracking-widest">
-          My Latest Work
-        </h1>
+        <h1 className="text-4xl font-semibold tracking-widest">My Latest Work</h1>
         <p className="text-gray-600 max-w-3xl mx-auto mt-3 px-4">
           Explore a collection of projects showcasing my expertise in front-end
           development, full-stack solutions, and modern web technologies.
         </p>
-      </div>
+      </motion.div>
 
       {/* Projects Grid */}
-      <div className=" grid 
-    grid-cols-1 
-    md:grid-cols-2 
-    lg:grid-cols-3 
-    gap-6 
-    md:gap-8 
-    lg:gap-10 
-    p-8 
-    md:p-16 
-    lg:p-24">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10 p-8 md:p-16 lg:p-24 max-w-[1400px] mx-auto"
+        initial={reduce ? undefined : "hidden"}
+        whileInView={reduce ? undefined : "visible"}
+        viewport={{ once: true, amount: 0.18 }}
+        variants={containerVariants}
+        style={{ willChange: "transform, opacity" }}
+      >
         {projects.map((item, index) => (
-          <div
+          <motion.article
             key={index}
-            className="flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-transform duration-500 bg-white group"
+            className="flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden shadow-md bg-white"
+            variants={cardVariants}
+            style={{
+              transformOrigin: "center center",
+              willChange: "transform, opacity",
+              minHeight: 420,
+            }}
+            whileHover={reduce ? {} : { scale: 1.03, y: -8 }}
+            transition={{ type: "spring", stiffness: 240, damping: 22 }}
+            aria-labelledby={`project-title-${index}`}
           >
             {/* Image */}
-            <div className="overflow-hidden h-56">
-              <img
+            <motion.div
+              className="overflow-hidden h-56"
+              initial={{ scale: 1 }}
+              whileHover={reduce ? {} : { scale: 1.02 }}
+              style={{ willChange: "transform" }}
+            >
+              <motion.img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500"
+                loading="lazy"
+                // subtle entrance for images (only if not reduced)
+                initial={reduce ? undefined : { scale: 1.03 }}
+                animate={reduce ? undefined : { scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               />
-            </div>
+            </motion.div>
 
             {/* Content */}
             <div className="p-5 flex flex-col gap-3">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2
+                id={`project-title-${index}`}
+                className="text-xl font-semibold text-gray-800"
+              >
                 {item.title}
               </h2>
-              <p className="text-gray-600 text-sm">{item.description}</p>
+
+              <p className="text-gray-600 text-sm line-clamp-4">{item.description}</p>
 
               {/* Buttons */}
               <div className="flex items-center gap-3 mt-4">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black  hover:text-white transition-all duration-500">
+                <motion.button
+                  whileTap={reduce ? undefined : { scale: 0.97 }}
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors duration-200"
+                  aria-label={`View code for ${item.title}`}
+                >
                   <Github className="w-4 h-4" />
                   Code
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white  transition-all duration-500">
+                </motion.button>
+
+                <motion.button
+                  whileTap={reduce ? undefined : { scale: 0.97 }}
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors duration-200"
+                  aria-label={`View live demo for ${item.title}`}
+                >
                   <ExternalLink className="w-4 h-4" />
                   Live Demo
-                </button>
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.article>
         ))}
-      </div> 
+      </motion.div>
     </>
   );
-};
-
-export default LastestWork;
+}
