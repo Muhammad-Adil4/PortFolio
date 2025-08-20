@@ -13,9 +13,7 @@ const ovo = Ovo({
 
 const navContainer = {
   hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.06 },
-  },
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.06 } },
 };
 
 const navItem = {
@@ -43,18 +41,24 @@ const panelV = {
 const linkHover = (reduce) =>
   reduce
     ? {}
-    : {
-        scale: 1.04,
-        y: -2,
-        transition: { type: "spring", stiffness: 300, damping: 20 },
-      };
+    : { scale: 1.04, y: -2, transition: { type: "spring", stiffness: 300, damping: 20 } };
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const scrollPosition = useRef(0);
   const reduce = useReducedMotion();
+  const targetSection = useRef(null);
+  const scrollPosition = useRef(0);
 
+  const navLinks = [
+    { name: "Home", href: "#home" },
+    { name: "About Me", href: "#about" },
+    { name: "Services", href: "#Services" },
+    { name: "My Work", href: "#work" },
+    { name: "Contact", href: "#contact" },
+  ];
+
+  // Track scroll for navbar background
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 6);
     handleScroll();
@@ -62,7 +66,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Lock scroll when menu opens
+  // Lock scroll when mobile menu opens
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -74,7 +78,6 @@ export default function Navbar() {
       document.body.style.right = "0";
       document.body.style.overflow = "hidden";
     } else {
-      const top = document.body.style.top;
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
@@ -96,13 +99,50 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
-  const navLinks = [
-    { name: "Home", href: "#home" },
-    { name: "About Me", href: "#about" },
-    { name: "Services", href: "#Services" },
-    { name: "My Work", href: "#work" },
-    { name: "Contact", href: "#contact" },
-  ];
+  // Smooth scroll to targetSection after mobile menu closes
+  useEffect(() => {
+    if (!isMenuOpen && targetSection.current) {
+      const targetElement = document.querySelector(targetSection.current);
+      if (targetElement) {
+        // Unlock body first
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.overflow = "";
+
+        // Calculate scroll start from current viewport
+        const navbarHeight = document.querySelector("nav")?.offsetHeight || 0;
+        const currentScroll = window.scrollY;
+        const targetPosition = targetElement.getBoundingClientRect().top + currentScroll - navbarHeight;
+
+        setTimeout(() => {
+          window.scrollTo({ top: targetPosition, behavior: "smooth" });
+        }, 50);
+      }
+      targetSection.current = null;
+    }
+  }, [isMenuOpen]);
+
+  // Handle link clicks (desktop & mobile)
+  const handleNavClick = (href, e) => {
+    e.preventDefault();
+
+    if (isMenuOpen) {
+      // Store target for scrolling after menu closes
+      targetSection.current = href;
+      setIsMenuOpen(false);
+    } else {
+      const targetElement = document.querySelector(href);
+      if (targetElement) {
+        const navbarHeight = document.querySelector("nav")?.offsetHeight || 0;
+        const currentScroll = window.scrollY;
+        const targetPosition = targetElement.getBoundingClientRect().top + currentScroll - navbarHeight;
+
+        window.scrollTo({ top: targetPosition, behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <>
@@ -111,7 +151,7 @@ export default function Navbar() {
         <Image src={assets.header_bg_color} alt="header background" className="w-full h-auto" />
       </div>
 
-      {/* Navbar wrapper */}
+      {/* Navbar */}
       <motion.nav
         className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-5 py-5 md:px-16 transition-all duration-300 ${
           isScrolled || isMenuOpen ? "bg-white shadow-md backdrop-blur-md" : "bg-transparent"
@@ -119,10 +159,16 @@ export default function Navbar() {
         initial="hidden"
         animate="visible"
         variants={navContainer}
-        style={{ willChange: "transform, opacity, background-color" }}
+        style={{ willChange: "transform, opacity, backgroundColor" }}
       >
         {/* Logo */}
-        <motion.a href="#home" aria-label="Home" className="flex items-center" variants={logoV}>
+        <motion.a
+          href="#home"
+          aria-label="Home"
+          className="flex items-center"
+          variants={logoV}
+          onClick={(e) => handleNavClick("#home", e)}
+        >
           <Logo />
         </motion.a>
 
@@ -136,7 +182,11 @@ export default function Navbar() {
         >
           {navLinks.map((link) => (
             <motion.li key={link.href} variants={navItem} className="list-none">
-              <a href={link.href} className="inline-block px-2 py-1 hover:text-[#6467f2] transition-colors">
+              <a
+                href={link.href}
+                className="inline-block px-2 py-1 hover:text-[#6467f2] transition-colors"
+                onClick={(e) => handleNavClick(link.href, e)}
+              >
                 <motion.span whileHover={linkHover(reduce)} style={{ display: "inline-block" }}>
                   {link.name}
                 </motion.span>
@@ -155,6 +205,7 @@ export default function Navbar() {
             href="#contact"
             className="md:flex hidden items-center gap-3 border border-gray-500 rounded-full px-6 py-2.5 hover:bg-gray-100 transition"
             whileHover={linkHover(reduce)}
+            onClick={(e) => handleNavClick("#contact", e)}
           >
             Contact
             <Image src={assets.arrow_icon} alt="send-icon" className="w-3" />
@@ -170,7 +221,6 @@ export default function Navbar() {
         <AnimatePresence>
           {isMenuOpen && (
             <>
-              {/* Dark overlay */}
               <motion.div
                 key="overlay"
                 className="fixed h-screen inset-0 z-40"
@@ -182,7 +232,6 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               />
 
-              {/* Side panel */}
               <motion.aside
                 key="panel"
                 className="fixed top-0 right-0 w-64 h-screen bg-rose-50 z-50 px-8 py-20 flex flex-col gap-6"
@@ -199,7 +248,7 @@ export default function Navbar() {
                   <motion.a
                     key={link.href}
                     href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={(e) => handleNavClick(link.href, e)}
                     className="text-lg font-medium hover:text-[#6467f2] transition-colors"
                     variants={navItem}
                     whileHover={linkHover(reduce)}
