@@ -18,6 +18,15 @@ export const projects = [
       "A full-stack e-commerce solution with user authentication, product catalog, shopping cart, and secure checkout. Includes admin dashboard for managing products, orders, and users, offering a complete online shopping experience.",
     image:
       "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
+    live: "https://go-cart-ecommerce.vercel.app/",
+  },
+  {
+    title: "SaaS AI Platform",
+    description:
+      "A SaaS web application showcasing AI-powered tools and solutions. Features interactive demos, predictive analytics, and a clean responsive UI.",
+    image:
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
+    live: "https://quick-ai-liard-seven.vercel.app/",
   },
   {
     title: "Social Media Dashboard",
@@ -27,18 +36,12 @@ export const projects = [
       "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
   },
   {
-    title: "Project Management Tool",
+    title: "Blogging Website",
     description:
-      "A collaborative platform to organize and track project tasks, timelines, and team communication. Features include task assignment, progress tracking, file sharing, and real-time updates to boost team productivity.",
+      "A blogging platform where users can write, publish, and manage articles. Includes categories, SEO optimization, and a modern responsive layout.",
     image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
-  },
-  {
-    title: "Online Learning Platform",
-    description:
-      "A comprehensive e-learning website offering video lectures, quizzes, and course progress tracking. Allows instructors to create and manage courses while providing students with interactive learning materials and performance analytics.",
-    image:
-      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80",
+    live: "https://ai-blog-six-lovat.vercel.app/",
   },
   {
     title: "AI Web Tool",
@@ -52,10 +55,7 @@ export const projects = [
 const containerVariants = {
   hidden: {},
   visible: {
-    transition: {
-      staggerChildren: 0.10,
-      delayChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.1, delayChildren: 0.08 },
   },
 };
 
@@ -87,10 +87,11 @@ export default function LatestWork() {
         whileInView={reduce ? undefined : "visible"}
         viewport={{ once: true, amount: 0.2 }}
         variants={headingVariants}
-        style={{ willChange: "transform, opacity" }}
       >
         <h1 className="text-gray-500 text-lg tracking-widest">My portfolio</h1>
-        <h1 className="text-4xl font-semibold tracking-widest">My Latest Work</h1>
+        <h1 className="text-4xl font-semibold tracking-widest">
+          My Latest Work
+        </h1>
         <p className="text-gray-600 max-w-3xl mx-auto mt-3 px-4">
           Explore a collection of projects showcasing my expertise in front-end
           development, full-stack solutions, and modern web technologies.
@@ -104,71 +105,48 @@ export default function LatestWork() {
         whileInView={reduce ? undefined : "visible"}
         viewport={{ once: true, amount: 0.18 }}
         variants={containerVariants}
-        style={{ willChange: "transform, opacity" }}
       >
         {projects.map((item, index) => (
           <motion.article
             key={index}
             className="flex flex-col justify-between border border-gray-200 rounded-xl overflow-hidden shadow-md bg-white"
             variants={cardVariants}
-            style={{
-              transformOrigin: "center center",
-              willChange: "transform, opacity",
-              minHeight: 420,
-            }}
+            style={{ minHeight: 420 }}
             whileHover={reduce ? {} : { scale: 1.03, y: -8 }}
             transition={{ type: "spring", stiffness: 240, damping: 22 }}
-            aria-labelledby={`project-title-${index}`}
           >
             {/* Image */}
-            <motion.div
-              className="overflow-hidden h-56"
-              initial={{ scale: 1 }}
-              whileHover={reduce ? {} : { scale: 1.02 }}
-              style={{ willChange: "transform" }}
-            >
+            <motion.div className="overflow-hidden h-56">
               <motion.img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-500"
+                className="w-full h-full object-cover"
                 loading="lazy"
-                // subtle entrance for images (only if not reduced)
-                initial={reduce ? undefined : { scale: 1.03 }}
-                animate={reduce ? undefined : { scale: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
               />
             </motion.div>
 
             {/* Content */}
             <div className="p-5 flex flex-col gap-3">
-              <h2
-                id={`project-title-${index}`}
-                className="text-xl font-semibold text-gray-800"
-              >
+              <h2 className="text-xl font-semibold text-gray-800">
                 {item.title}
               </h2>
-
-              <p className="text-gray-600 text-sm line-clamp-4">{item.description}</p>
+              <p className="text-gray-600 text-sm line-clamp-4">
+                {item.description}
+              </p>
 
               {/* Buttons */}
               <div className="flex items-center gap-3 mt-4">
-                <motion.button
-                  whileTap={reduce ? undefined : { scale: 0.97 }}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors duration-200"
-                  aria-label={`View code for ${item.title}`}
-                >
-                  <Github className="w-4 h-4" />
-                  Code
-                </motion.button>
-
-                <motion.button
-                  whileTap={reduce ? undefined : { scale: 0.97 }}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition-colors duration-200"
-                  aria-label={`View live demo for ${item.title}`}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Live Demo
-                </motion.button>
+                {item.live && (
+                  <a
+                    href={item.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-black hover:text-white transition"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Live Demo
+                  </a>
+                )}
               </div>
             </div>
           </motion.article>

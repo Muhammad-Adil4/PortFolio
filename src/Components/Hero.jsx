@@ -126,7 +126,7 @@ const Hero = () => {
           whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.975 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          href="/resume.pdf"
+          href="/Muhammad Adil Cv.pdf"
           role="button"
           aria-label="Download resume of Muhammad Adil"
           className="flex items-center py-3 px-5 md:py-4 md:px-7 rounded-full gap-2 transition-colors duration-200 border-gray-400 text-md border hover:bg-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
